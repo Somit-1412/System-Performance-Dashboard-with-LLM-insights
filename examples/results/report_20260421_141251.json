@@ -1,0 +1,53 @@
+{
+  "report_id": "REPORT-20260421141251",
+  "timestamp": "2026-04-21T14:12:51.703208",
+  "total_cycles": 1,
+  "summary": {
+    "total_anomalies_detected": 0,
+    "total_recommendations": 0,
+    "average_recommendations_per_cycle": 0.0,
+    "execution_status": "completed"
+  },
+  "execution_history": [
+    {
+      "cycle_id": "CYCLE-20260421141250",
+      "timestamp": "2026-04-21T14:12:50.528678",
+      "stages": {
+        "monitoring": {
+          "status": "completed",
+          "metrics_collected": {
+            "timestamp": "2026-04-21T14:12:50.528764",
+            "cpu": {
+              "timestamp": "2026-04-21T14:12:50.528772",
+              "cpu_percent": 11.0,
+              "cpu_count": 8
+            },
+            "memory": {
+              "timestamp": "2026-04-21T14:12:51.541037",
+              "total_mb": 8103.09765625,
+              "used_mb": 7086.0546875,
+              "percent": 87.4
+            },
+            "disk": {
+              "timestamp": "2026-04-21T14:12:51.702924",
+              "total_gb": 127.60960388183594,
+              "used_gb": 74.97991561889648,
+              "percent": 58.8
+            }
+          },
+          "history_size": 1
+        },
+        "analysis": {
+          "status": "completed",
+          "anomalies_detected": 0,
+          "primary_bottleneck": "memory"
+        },
+        "optimization": {
+          "status": "completed",
+          "recommendations_generated": 0,
+          "recommendations": []
+        }
+      }
+    }
+  ]
+}

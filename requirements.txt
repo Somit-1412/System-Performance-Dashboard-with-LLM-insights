@@ -1,0 +1,15 @@
+﻿crewai
+crewai-tools
+python-dotenv
+pydantic
+anthropic
+openai
+requests
+psutil
+numpy
+pandas
+matplotlib
+seaborn
+flask
+pyyaml
+python-logging-loki

@@ -1,0 +1,72 @@
+﻿# Agentic AI Performance Engineering Configuration
+
+# LLM Configuration
+llm:
+  provider: "openai"  # or "anthropic", "claude", etc.
+  model: "gpt-4-turbo"
+  temperature: 0.3
+  max_tokens: 2000
+  api_timeout: 30
+
+# Agent Configuration
+agents:
+  monitor:
+    enabled: true
+    update_interval: 60  # seconds
+    max_retries: 3
+    memory_size: 100
+
+  analyzer:
+    enabled: true
+    anomaly_threshold: 0.85
+    correlation_threshold: 0.75
+    analysis_window: 300  # seconds
+
+  optimizer:
+    enabled: true
+    recommendation_limit: 5
+    optimization_threshold: 20  # % improvement
+
+# Performance Monitoring
+monitoring:
+  cpu_threshold: 80
+  memory_threshold: 85
+  disk_threshold: 90
+  latency_threshold: 500  # ms
+  error_rate_threshold: 5  # %
+  collection_interval: 30  # seconds
+
+# Database Configuration
+database:
+  type: "sqlite"  # or "postgres", "mysql"
+  path: "./data/performance.db"
+  retention_days: 30
+  batch_size: 100
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "./logs/performance.log"
+  max_file_size: 10485760  # 10MB
+  backup_count: 5
+
+# Workflow Configuration
+workflow:
+  executor: "sequential"  # or "parallel"
+  max_iterations: 5
+  timeout_per_task: 300  # seconds
+  verbose: true
+
+# Optimization Settings
+optimization:
+  strategies:
+    - "resource_reallocation"
+    - "query_optimization"
+    - "caching_strategy"
+    - "load_balancing"
+    - "auto_scaling"
+  
+  impact_estimation: true
+  cost_aware: true
+  risk_level: "medium"  # low, medium, high
