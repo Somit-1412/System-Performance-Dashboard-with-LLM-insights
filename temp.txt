@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Performance Dashboard</title>
+    <style>
+        body { font-family: Arial; background:#0f172a; color:#e2e8f0; margin:0; padding:20px; }
+        h1 { margin-bottom:10px; }
+        button { padding:10px 18px; background:#3b82f6; color:white; border:none; border-radius:6px; cursor:pointer; }
+        .banner { padding:12px; border-radius:8px; margin:15px 0; font-weight:bold; }
+        .healthy { background:#065f46; }
+        .warning { background:#92400e; }
+        .critical { background:#7f1d1d; }
+
+        .grid { display:grid; grid-template-columns: repeat(3,1fr); gap:20px; }
+        .card { background:#1e293b; padding:15px; border-radius:10px; }
+
+        .bar { height:8px; border-radius:4px; margin-top:5px; }
+        .low { background:#16a34a; }
+        .medium { background:#f59e0b; }
+        .high { background:#ef4444; }
+
+        .list-item { background:#334155; padding:10px; border-radius:6px; margin-bottom:8px; }
+
+        table { width:100%; margin-top:20px; border-collapse: collapse; }
+        th, td { padding:8px; border-bottom:1px solid #334155; text-align:left; }
+    </style>
+
+    <script>
+        let historyData = [];
+
+        function severityClass(val){
+            if(val>80) return "high";
+            if(val>60) return "medium";
+            return "low";
+        }
+
+        function healthStatus(analysis){
+            if(analysis.anomalies_detected > 0) return "critical";
+            if(analysis.primary_bottleneck !== "unknown") return "warning";
+            return "healthy";
+        }
+
+        async function runCycle(){
+            const res = await fetch('/run', {method:'POST'});
+            const data = await res.json();
+            const cycle = data.execution_history[data.execution_history.length-1];
+            historyData.push(cycle);
+            render(cycle);
+            renderHistory();
+        }
+
+        function render(cycle){
+            const metrics = cycle.stages.monitoring.metrics_collected;
+            const analysis = cycle.stages.analysis;
+            const recs = cycle.stages.optimization.recommendations || [];
+
+            // Health
+            const health = healthStatus(analysis);
+            document.getElementById("health").className = "banner " + health;
+            document.getElementById("health").innerText = "System Status: " + health.toUpperCase();
+
+            // Monitoring
+            document.getElementById("monitoring").innerHTML = `
+                CPU: ${metrics.cpu.cpu_percent}% 
+                <div class="bar ${severityClass(metrics.cpu.cpu_percent)}" style="width:${metrics.cpu.cpu_percent}%"></div>
+
+                Memory: ${metrics.memory.percent}%
+                <div class="bar ${severityClass(metrics.memory.percent)}" style="width:${metrics.memory.percent}%"></div>
+
+                Disk: ${metrics.disk.percent}%
+                <div class="bar ${severityClass(metrics.disk.percent)}" style="width:${metrics.disk.percent}%"></div>
+            `;
+
+            // Analysis
+            document.getElementById("analysis").innerHTML = `
+                Anomalies: ${analysis.anomalies_detected}<br>
+                Bottleneck: ${analysis.primary_bottleneck}<br>
+                Timestamp: ${cycle.timestamp}
+            `;
+
+            // Root cause (placeholder if not present)
+            document.getElementById("rootcause").innerHTML =
+                cycle.stages.analysis.root_cause || "Not available";
+
+            // Recommendations
+            let recHTML = "";
+            if(recs.length === 0){
+                recHTML = "No recommendations";
+            } else {
+                recs.forEach(r=>{
+                    recHTML += `<div class="list-item">
+                        ${r.description || "Recommendation"}<br>
+                        Impact: ${r.impact || "N/A"} |
+                        Effort: ${r.effort || "N/A"} |
+                        Priority: ${r.priority || "N/A"}
+                    </div>`;
+                });
+            }
+            document.getElementById("recommendations").innerHTML = recHTML;
+        }
+
+        function renderHistory(){
+            let rows = "";
+            historyData.slice(-5).forEach(c=>{
+                const m = c.stages.monitoring.metrics_collected;
+                const a = c.stages.analysis;
+
+                rows += `<tr>
+                    <td>${c.timestamp}</td>
+                    <td>${m.cpu.cpu_percent}%</td>
+                    <td>${m.memory.percent}%</td>
+                    <td>${a.primary_bottleneck}</td>
+                    <td>${a.anomalies_detected}</td>
+                </tr>`;
+            });
+
+            document.getElementById("history").innerHTML = rows;
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Performance Engineering Dashboard</h1>
+    <button onclick="runCycle()">Run Analysis</button>
+
+    <div id="health" class="banner">System Status</div>
+
+    <div class="grid">
+        <div class="card">
+            <h3>Monitoring</h3>
+            <div id="monitoring"></div>
+        </div>
+
+        <div class="card">
+            <h3>Analysis</h3>
+            <div id="analysis"></div>
+        </div>
+
+        <div class="card">
+            <h3>Root Cause</h3>
+            <div id="rootcause"></div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h3>Recommendations</h3>
+        <div id="recommendations"></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>CPU</th>
+                <th>Memory</th>
+                <th>Bottleneck</th>
+                <th>Anomalies</th>
+            </tr>
+        </thead>
+        <tbody id="history"></tbody>
+    </table>
+</body>
+</html>

@@ -24,6 +24,7 @@ class PerformanceEngineeringCrew:
         self.final_report = None
     
     def execute_cycle(self) -> Dict[str, Any]:
+        print("EXECUTE_CYCLE CALLED")
         """Execute one complete performance engineering cycle"""
         cycle_report = {
             "cycle_id": f"CYCLE-{datetime.now().strftime('%Y%m%d%H%M%S')}",
@@ -42,27 +43,32 @@ class PerformanceEngineeringCrew:
         
         # Stage 2: Analysis
         print("[2/3] Analyzing metrics...")
+
         metrics_history = self.monitor_agent.metrics_history[-10:] if len(self.monitor_agent.metrics_history) > 0 else []
         analysis = self.analyzer_agent.analyze_metrics(metrics_history)
+
         cycle_report["stages"]["analysis"] = {
             "status": "completed",
             "anomalies_detected": len(analysis.get("anomalies", [])),
-            "primary_bottleneck": analysis.get("bottleneck", {}).get("primary_bottleneck", "unknown")
+            "primary_bottleneck": analysis.get("bottleneck", {}).get("primary_bottleneck", "unknown"),
+            "explanation": analysis.get("explanation", "No explanation available")
         }
         
         # Stage 3: Optimization
         print("[3/3] Generating recommendations...")
-        recommendations = self.optimizer_agent.generate_recommendations(analysis.get("bottleneck", {}))
+
+        recommendations = self.optimizer_agent.generate_recommendations(analysis)
+
         cycle_report["stages"]["optimization"] = {
             "status": "completed",
             "recommendations_generated": len(recommendations),
             "recommendations": recommendations
         }
-        
+
         if recommendations:
             action_plan = self.optimizer_agent.create_plan(recommendations)
             cycle_report["stages"]["optimization"]["action_plan"] = action_plan
-        
+
         self.execution_history.append(cycle_report)
         return cycle_report
     
