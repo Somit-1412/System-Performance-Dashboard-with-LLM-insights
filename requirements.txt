@@ -2,8 +2,13 @@
 crewai-tools
 python-dotenv
 pydantic
+
+# LLMs
 anthropic
 openai
+groq
+google-genai
+
 requests
 psutil
 numpy
@@ -13,3 +18,4 @@ seaborn
 flask
 pyyaml
 python-logging-loki
+
